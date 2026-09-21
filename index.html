@@ -1,0 +1,18 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Raito Chat</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#313338;color:#ddd;font:15px Arial;height:100vh;display:flex}.left{width:250px;background:#2b2d31}.head{padding:20px;font-weight:bold;border-bottom:1px solid #202125}.ch{padding:10px 18px;color:#aaa}.active{background:#404249;color:#fff}.main{flex:1;display:flex;flex-direction:column}.top{padding:20px;border-bottom:1px solid #202125;font-weight:bold}.chat{flex:1;overflow:auto;padding:20px}.msg{display:flex;gap:10px;margin:15px 0}.av{width:40px;height:40px;border-radius:50%;background:#5865f2;display:grid;place-items:center;font-weight:bold}.text p{margin:5px 0}.time{color:#888;font-size:11px;margin-left:8px}.send{display:flex;gap:10px;padding:15px}.send input{flex:1;background:#383a40;border:0;border-radius:8px;padding:14px;color:#fff}.send button{background:#5865f2;color:#fff;border:0;border-radius:8px;padding:0 20px}.right{width:190px;background:#2b2d31;padding:20px}.online{color:#aaa;font-size:12px}.dot{display:inline-block;width:9px;height:9px;background:#23a559;border-radius:50%;margin-right:8px}
+</style></head><body>
+<div class="left"><div class="head">Raito Chat</div><div class="ch active"># general</div><div class="ch"># gaming</div><div class="ch"># music</div><div class="ch">🔊 General</div></div>
+<div class="main"><div class="top"># general <span id="status" style="color:#888;font-size:12px">Connecting…</span></div><div id="chat" class="chat"></div>
+<form id="form" class="send"><input id="input" placeholder="Message #general" autocomplete="off"><button>Send</button></form></div>
+<div class="right"><div class="online">ONLINE</div><p><span class="dot"></span><b>Punler</b> 👑</p></div>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import{getFirestore,collection,addDoc,query,orderBy,onSnapshot,serverTimestamp,limit}from"https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+const app=initializeApp({apiKey:"AIzaSyB9u5FmFrQoDWW8lE6u9b_p5SZQicrMLp0",authDomain:"discord-punler.firebaseapp.com",projectId:"discord-punler",storageBucket:"discord-punler.firebasestorage.app",messagingSenderId:"209745567966",appId:"1:209745567966:web:3aa3606ac7418ac7fb624f"});
+const db=getFirestore(app),chat=document.getElementById("chat"),input=document.getElementById("input"),status=document.getElementById("status");
+const q=query(collection(db,"messages"),orderBy("createdAt","asc"),limit(100));
+onSnapshot(q,s=>{chat.innerHTML="";s.forEach(d=>{let x=d.data(),r=document.createElement("div");r.className="msg";r.innerHTML='<div class="av">P</div><div class="text"><b></b><span class="time">just now</span><p></p></div>';r.querySelector("b").textContent=x.name||"Punler";r.querySelector("p").textContent=x.text||"";chat.append(r)});chat.scrollTop=chat.scrollHeight;status.textContent="● Live"},e=>{status.textContent="Firestore error";console.error(e)});
+document.getElementById("form").onsubmit=async e=>{e.preventDefault();let text=input.value.trim();if(!text)return;input.value="";try{await addDoc(collection(db,"messages"),{name:"Punler",text,createdAt:serverTimestamp()})}catch(err){input.value=text;alert("Send failed. Create Firestore Database and set its rules first.");console.error(err)}};
+</script></body></html>
