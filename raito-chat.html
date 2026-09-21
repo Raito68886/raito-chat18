@@ -1,0 +1,2197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Raito Chat</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#0f1117;
+  color:#fff;
+  height:100vh;
+  overflow:hidden
+}
+
+button,input,select{
+  font-family:inherit
+}
+
+.app{
+  display:flex;
+  height:100vh
+}
+
+/* LEFT */
+.left{
+  width:250px;
+  background:#171a22;
+  border-right:1px solid #292e3a;
+  padding:18px;
+  display:flex;
+  flex-direction:column
+}
+
+.logo{
+  font-size:25px;
+  font-weight:800;
+  margin-bottom:18px
+}
+
+.logo span{
+  color:#6c63ff
+}
+
+.new{
+  background:#6c63ff;
+  color:white;
+  border:0;
+  border-radius:11px;
+  padding:12px;
+  font-weight:bold;
+  cursor:pointer
+}
+
+.label{
+  color:#888;
+  font-size:12px;
+  margin:20px 0 8px
+}
+
+.rooms{
+  overflow:auto;
+  flex:1
+}
+
+.room{
+  padding:12px;
+  border-radius:10px;
+  background:#202430;
+  margin-bottom:6px;
+  cursor:pointer
+}
+
+.room.active{
+  background:#34395c
+}
+
+.room small{
+  color:#999
+}
+
+/* CENTER */
+.center{
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column
+}
+
+.header{
+  height:68px;
+  padding:0 20px;
+  background:#151821;
+  border-bottom:1px solid #292e3a;
+  display:flex;
+  align-items:center;
+  justify-content:space-between
+}
+
+.title{
+  font-weight:bold;
+  font-size:18px
+}
+
+.online{
+  font-size:12px;
+  color:#55d98a
+}
+
+.profileBtn{
+  background:#292e3a;
+  color:white;
+  border:0;
+  padding:10px 14px;
+  border-radius:10px;
+  cursor:pointer
+}
+
+.messages{
+  flex:1;
+  overflow:auto;
+  padding:22px
+}
+
+.message{
+  max-width:650px;
+  margin-bottom:18px
+}
+
+.message.me{
+  margin-left:auto;
+  text-align:right
+}
+
+.name{
+  color:#999;
+  font-size:12px;
+  margin-bottom:5px
+}
+
+.messageTop{
+  display:flex;
+  align-items:flex-end;
+  gap:8px
+}
+
+.message.me .messageTop{
+  flex-direction:row-reverse
+}
+
+.chatAvatar{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#6c63ff;
+  flex-shrink:0
+}
+
+.bubble{
+  display:inline-block;
+  background:#222733;
+  padding:10px 13px;
+  border-radius:15px;
+  text-align:left;
+  word-break:break-word
+}
+
+.me .bubble{
+  background:#6c63ff
+}
+
+.media{
+  max-width:320px;
+  max-height:300px;
+  border-radius:12px;
+  display:block
+}
+
+.actions{
+  margin-top:5px;
+  display:flex;
+  gap:4px;
+  flex-wrap:wrap
+}
+
+.action{
+  background:#191d26;
+  color:white;
+  border:1px solid #343a49;
+  border-radius:13px;
+  padding:4px 8px;
+  cursor:pointer;
+  font-size:12px
+}
+
+.action.selected{
+  background:#6c63ff
+}
+
+.composer{
+  display:flex;
+  gap:7px;
+  padding:12px;
+  background:#151821;
+  border-top:1px solid #292e3a
+}
+
+.input{
+  flex:1;
+  background:#222733;
+  border:1px solid #343a49;
+  color:white;
+  border-radius:11px;
+  padding:12px;
+  outline:none
+}
+
+.icon,.send{
+  border:0;
+  border-radius:11px;
+  padding:0 13px;
+  cursor:pointer
+}
+
+.icon{
+  background:#292e3a;
+  color:white;
+  font-size:17px
+}
+
+.send{
+  background:#6c63ff;
+  color:white;
+  font-weight:bold
+}
+
+.file{
+  display:none
+}
+
+/* RIGHT */
+.right{
+  width:260px;
+  background:#171a22;
+  border-left:1px solid #292e3a;
+  padding:18px;
+  overflow:auto
+}
+
+.right h3{
+  margin:0 0 12px
+}
+
+.person{
+  display:flex;
+  align-items:flex-start;
+  gap:9px;
+  background:#202430;
+  padding:9px;
+  border-radius:10px;
+  margin-bottom:6px
+}
+
+.avatar{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#6c63ff;
+  flex-shrink:0
+}
+
+.dot{
+  color:#55d98a
+}
+
+.owner{
+  font-size:10px;
+  color:#ffcf4a
+}
+
+.info{
+  margin-top:20px;
+  background:#202430;
+  border-radius:12px;
+  padding:13px
+}
+
+.info div{
+  margin:7px 0;
+  color:#bbb
+}
+
+.info b{
+  color:white
+}
+
+.ownerControls{
+  margin-top:15px;
+  padding-top:12px;
+  border-top:1px solid #343a49
+}
+
+.danger{
+  width:100%;
+  background:#d63b4b;
+  color:white;
+  border:0;
+  border-radius:9px;
+  padding:10px;
+  margin-top:6px;
+  cursor:pointer;
+  font-weight:bold
+}
+
+.danger2{
+  width:100%;
+  background:#7d2733;
+  color:white;
+  border:0;
+  border-radius:9px;
+  padding:10px;
+  margin-top:6px;
+  cursor:pointer;
+  font-weight:bold
+}
+
+/* EMOJI */
+.emoji{
+  display:none;
+  position:fixed;
+  bottom:72px;
+  left:280px;
+  width:240px;
+  background:#191d26;
+  border:1px solid #343a49;
+  border-radius:14px;
+  padding:10px;
+  z-index:20
+}
+
+.emoji button{
+  border:0;
+  background:none;
+  font-size:23px;
+  padding:5px;
+  cursor:pointer
+}
+
+/* MODAL */
+.modalBg{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#000b;
+  align-items:center;
+  justify-content:center;
+  z-index:30
+}
+
+.modal{
+  width:400px;
+  max-width:92%;
+  max-height:90vh;
+  overflow:auto;
+  background:#191d26;
+  padding:22px;
+  border-radius:17px
+}
+
+.modal input,
+.modal select{
+  width:100%;
+  background:#222733;
+  color:white;
+  border:1px solid #343a49;
+  padding:11px;
+  border-radius:9px;
+  margin:6px 0
+}
+
+.modalBtns{
+  display:flex;
+  gap:8px;
+  margin-top:10px
+}
+
+.modalBtns button{
+  flex:1;
+  padding:11px;
+  border:0;
+  border-radius:9px;
+  cursor:pointer
+}
+
+.cancel{
+  background:#343a49;
+  color:white
+}
+
+.create{
+  background:#6c63ff;
+  color:white
+}
+
+.profileBig{
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#6c63ff;
+  display:block;
+  margin:10px auto
+}
+
+.choosePhoto{
+  display:block;
+  width:100%;
+  background:#292e3a;
+  color:white;
+  text-align:center;
+  padding:11px;
+  border-radius:9px;
+  cursor:pointer;
+  margin:8px 0
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- LEFT -->
+<aside class="left">
+
+  <div class="logo">
+    Raito <span>Chat</span>
+  </div>
+
+  <button class="new" onclick="openRoom()">
+    ＋ New Room
+  </button>
+
+  <div class="label">ROOMS</div>
+
+  <div class="rooms" id="rooms"></div>
+
+  <div style="border-top:1px solid #292e3a;padding-top:12px">
+    👤 <b id="myName">Guest</b>
+  </div>
+
+</aside>
+
+
+<!-- CENTER -->
+<main class="center">
+
+  <header class="header">
+
+    <div>
+      <div class="title" id="roomTitle">
+        Public Room
+      </div>
+
+      <div class="online">
+        ● Online
+      </div>
+    </div>
+
+    <button class="profileBtn" onclick="openProfile()">
+      Profile
+    </button>
+
+  </header>
+
+
+  <section class="messages" id="messages"></section>
+
+
+  <div class="composer">
+
+    <button class="icon" onclick="toggleEmoji()">
+      😊
+    </button>
+
+    <label class="icon">
+      📷
+      <input
+        id="photo"
+        class="file"
+        type="file"
+        accept="image/*"
+      >
+    </label>
+
+    <label class="icon">
+      🎥
+      <input
+        id="video"
+        class="file"
+        type="file"
+        accept="video/*"
+      >
+    </label>
+
+    <input
+      id="text"
+      class="input"
+      placeholder="Write a message..."
+    >
+
+    <button class="send" onclick="sendText()">
+      Send
+    </button>
+
+  </div>
+
+</main>
+
+
+<!-- RIGHT -->
+<aside class="right">
+
+  <h3>👥 People</h3>
+
+  <div id="people"></div>
+
+  <div class="info">
+
+    <h3>🏠 Room Info</h3>
+
+    <div>
+      Name:
+      <b id="infoName">Public Room</b>
+    </div>
+
+    <div>
+      Owner:
+      <b id="infoOwner">Punler</b>
+    </div>
+
+    <div>
+      Price:
+      <b id="infoPrice">Free</b>
+    </div>
+
+    <div>
+      Members:
+      <b id="infoMembers">0</b>
+    </div>
+
+    <!-- ONLY OWNER -->
+    <div
+      id="ownerControls"
+      class="ownerControls"
+      style="display:none"
+    >
+
+      <b>👑 Owner Controls</b>
+
+      <button
+        class="danger2"
+        onclick="deleteAllChat()"
+      >
+        🧹 Delete All Chat
+      </button>
+
+      <button
+        class="danger"
+        onclick="deleteRoom()"
+      >
+        🗑️ Delete Room
+      </button>
+
+    </div>
+
+  </div>
+
+</aside>
+
+</div>
+
+
+<!-- EMOJI -->
+<div class="emoji" id="emoji"></div>
+
+
+<!-- PROFILE -->
+<div class="modalBg" id="profileModal">
+
+  <div class="modal">
+
+    <h2>👤 Profile</h2>
+
+    <img
+      id="profilePreview"
+      class="profileBig"
+      src=""
+      alt="Profile"
+    >
+
+    <label class="choosePhoto">
+      🖼️ Choose Profile Picture
+
+      <input
+        id="profilePhoto"
+        class="file"
+        type="file"
+        accept="image/*"
+      >
+    </label>
+
+    <input
+      id="nameInput"
+      placeholder="Your name"
+    >
+
+    <div class="modalBtns">
+
+      <button
+        class="cancel"
+        onclick="closeProfile()"
+      >
+        Cancel
+      </button>
+
+      <button
+        class="create"
+        onclick="saveProfile()"
+      >
+        Save
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ROOM -->
+<div class="modalBg" id="roomModal">
+
+  <div class="modal">
+
+    <h2>🏠 Create Room</h2>
+
+    <input
+      id="roomName"
+      placeholder="Room name"
+    >
+
+    <input
+      id="roomPrice"
+      type="number"
+      min="0"
+      placeholder="Price"
+    >
+
+    <div class="modalBtns">
+
+      <button
+        class="cancel"
+        onclick="closeRoom()"
+      >
+        Cancel
+      </button>
+
+      <button
+        class="create"
+        onclick="createRoom()"
+      >
+        Create
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- MOVE PLAYER -->
+<div class="modalBg" id="moveModal">
+
+  <div class="modal">
+
+    <h2>🚚 Move Player</h2>
+
+    <p id="movePlayerName"></p>
+
+    <select id="moveRoom"></select>
+
+    <div class="modalBtns">
+
+      <button
+        class="cancel"
+        onclick="closeMove()"
+      >
+        Cancel
+      </button>
+
+      <button
+        class="create"
+        onclick="confirmMove()"
+      >
+        Move
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   SETTINGS
+========================= */
+
+const OWNER = "Punler";
+
+let username =
+  localStorage.getItem("raitoName") || "";
+
+let profilePicture =
+  localStorage.getItem("raitoProfilePicture") || "";
+
+let currentRoom =
+  localStorage.getItem("raitoCurrentRoom") || "public";
+
+let rooms =
+  JSON.parse(
+    localStorage.getItem("raitoRooms") || "[]"
+  );
+
+let chats =
+  JSON.parse(
+    localStorage.getItem("raitoChats") || "{}"
+  );
+
+let members =
+  JSON.parse(
+    localStorage.getItem("raitoMembers") || "{}"
+  );
+
+
+/* =========================
+   DEFAULT DATA
+========================= */
+
+if(!rooms.length){
+
+  rooms=[
+    {
+      id:"public",
+      name:"Public Room",
+      price:0,
+      owner:OWNER
+    }
+  ];
+
+}
+
+if(!rooms.some(r=>r.id==="public")){
+
+  rooms.unshift({
+    id:"public",
+    name:"Public Room",
+    price:0,
+    owner:OWNER
+  });
+
+}
+
+if(!chats.public){
+  chats.public=[];
+}
+
+if(!members.public){
+
+  members.public=[
+    {
+      name:OWNER,
+      online:true,
+      picture:""
+    }
+  ];
+
+}
+
+save();
+
+
+/* =========================
+   SAVE
+========================= */
+
+function save(){
+
+  localStorage.setItem(
+    "raitoRooms",
+    JSON.stringify(rooms)
+  );
+
+  localStorage.setItem(
+    "raitoChats",
+    JSON.stringify(chats)
+  );
+
+  localStorage.setItem(
+    "raitoMembers",
+    JSON.stringify(members)
+  );
+
+}
+
+
+/* =========================
+   ESCAPE
+========================= */
+
+function safe(text){
+
+  return String(text)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+
+/* =========================
+   AVATAR
+========================= */
+
+function getAvatar(personName){
+
+  if(personName===username && profilePicture){
+    return profilePicture;
+  }
+
+  for(let roomId in members){
+
+    let person=(members[roomId]||[])
+      .find(x=>x.name===personName);
+
+    if(person && person.picture){
+      return person.picture;
+    }
+
+  }
+
+  return "";
+}
+
+function avatarHTML(name,className="avatar"){
+
+  let pic=getAvatar(name);
+
+  if(pic){
+
+    return `
+      <img
+        class="${className}"
+        src="${pic}"
+        alt="avatar"
+      >
+    `;
+
+  }
+
+  return `
+    <div
+      class="${className}"
+      style="
+        display:flex;
+        align-items:center;
+        justify-content:center
+      "
+    >
+      👤
+    </div>
+  `;
+
+}
+
+
+/* =========================
+   PROFILE
+========================= */
+
+function openProfile(){
+
+  document.getElementById("profileModal")
+    .style.display="flex";
+
+  document.getElementById("nameInput")
+    .value=username;
+
+  document.getElementById("profilePreview")
+    .src=
+      profilePicture ||
+      "data:image/svg+xml;charset=UTF-8,"+
+      encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="100"
+             height="100">
+          <rect width="100" height="100"
+                fill="#6c63ff"/>
+          <text x="50"
+                y="62"
+                font-size="45"
+                text-anchor="middle">
+            👤
+          </text>
+        </svg>
+      `);
+
+}
+
+function closeProfile(){
+
+  document.getElementById("profileModal")
+    .style.display="none";
+
+}
+
+
+/* SELECT PROFILE PHOTO */
+
+document.getElementById("profilePhoto")
+.addEventListener("change",function(){
+
+  let file=this.files[0];
+
+  if(!file)return;
+
+  if(!file.type.startsWith("image/")){
+
+    alert("Please choose an image.");
+
+    return;
+
+  }
+
+  let reader=new FileReader();
+
+  reader.onload=function(e){
+
+    profilePicture=e.target.result;
+
+    document.getElementById("profilePreview")
+      .src=profilePicture;
+
+  };
+
+  reader.readAsDataURL(file);
+
+});
+
+
+/* SAVE PROFILE */
+
+function saveProfile(){
+
+  let n=
+    document.getElementById("nameInput")
+      .value.trim();
+
+  if(!n){
+
+    alert("Enter your name");
+
+    return;
+
+  }
+
+  username=n;
+
+  localStorage.setItem(
+    "raitoName",
+    username
+  );
+
+  localStorage.setItem(
+    "raitoProfilePicture",
+    profilePicture
+  );
+
+  document.getElementById("myName")
+    .textContent=username;
+
+  addMeToRoom();
+
+  closeProfile();
+
+  renderPeople();
+  renderChat();
+
+}
+
+
+/* =========================
+   ADD PLAYER
+========================= */
+
+function addMeToRoom(){
+
+  members[currentRoom] =
+    members[currentRoom] || [];
+
+  let found=
+    members[currentRoom]
+      .find(x=>x.name===username);
+
+  if(!found){
+
+    members[currentRoom].push({
+
+      name:username,
+
+      online:true,
+
+      picture:profilePicture
+
+    });
+
+  }else{
+
+    found.picture=profilePicture;
+    found.online=true;
+
+  }
+
+  save();
+
+}
+
+
+/* =========================
+   ROOMS
+========================= */
+
+function renderRooms(){
+
+  let box=
+    document.getElementById("rooms");
+
+  box.innerHTML="";
+
+  rooms.forEach(room=>{
+
+    let div=
+      document.createElement("div");
+
+    div.className=
+      "room "+
+      (
+        room.id===currentRoom
+        ?"active"
+        :""
+      );
+
+    div.innerHTML=`
+
+      <b>🏠 ${safe(room.name)}</b>
+
+      <br>
+
+      <small>
+        ${
+          room.price
+          ?"$"+room.price
+          :"Free"
+        }
+
+        · Owner: ${safe(room.owner)}
+      </small>
+
+    `;
+
+    div.onclick=()=>{
+
+      currentRoom=room.id;
+
+      localStorage.setItem(
+        "raitoCurrentRoom",
+        currentRoom
+      );
+
+      addMeToRoom();
+
+      renderRooms();
+      renderChat();
+      renderPeople();
+
+    };
+
+    box.appendChild(div);
+
+  });
+
+}
+
+
+/* =========================
+   ROOM INFO
+========================= */
+
+function renderRoomInfo(){
+
+  let room=
+    rooms.find(
+      x=>x.id===currentRoom
+    );
+
+  if(!room)return;
+
+  document.getElementById("roomTitle")
+    .textContent=room.name;
+
+  document.getElementById("infoName")
+    .textContent=room.name;
+
+  document.getElementById("infoOwner")
+    .textContent=room.owner;
+
+  document.getElementById("infoPrice")
+    .textContent=
+      room.price
+      ?"$"+room.price
+      :"Free";
+
+  document.getElementById("infoMembers")
+    .textContent=
+      (members[currentRoom]||[]).length;
+
+
+  /* ONLY PUNLER */
+
+  document.getElementById("ownerControls")
+    .style.display=
+      username===OWNER
+      ?"block"
+      :"none";
+
+}
+
+
+/* =========================
+   PEOPLE
+========================= */
+
+function renderPeople(){
+
+  let box=
+    document.getElementById("people");
+
+  box.innerHTML="";
+
+  let list=
+    members[currentRoom] || [];
+
+  list.forEach(person=>{
+
+    let div=
+      document.createElement("div");
+
+    div.className="person";
+
+    let ownerTag=
+      person.name===OWNER
+      ?`<div class="owner">👑 OWNER</div>`
+      :"";
+
+    let controls="";
+
+    if(
+      username===OWNER &&
+      person.name!==OWNER
+    ){
+
+      controls=`
+
+        <button
+          class="action"
+          onclick="movePlayer('${safe(person.name)}')"
+        >
+          🚚 Move
+        </button>
+
+        <button
+          class="action"
+          onclick="kickPlayer('${safe(person.name)}')"
+        >
+          🚫 Kick
+        </button>
+
+      `;
+
+    }
+
+    div.innerHTML=`
+
+      ${avatarHTML(person.name)}
+
+      <div style="flex:1">
+
+        <b>${safe(person.name)}</b>
+
+        ${ownerTag}
+
+        <div>
+          <span class="dot">●</span>
+          <small> Online</small>
+        </div>
+
+        ${controls}
+
+      </div>
+
+    `;
+
+    box.appendChild(div);
+
+  });
+
+  renderRoomInfo();
+
+}
+
+
+/* =========================
+   CREATE ROOM
+========================= */
+
+function openRoom(){
+
+  document.getElementById("roomModal")
+    .style.display="flex";
+
+}
+
+function closeRoom(){
+
+  document.getElementById("roomModal")
+    .style.display="none";
+
+}
+
+function createRoom(){
+
+  if(username!==OWNER){
+
+    alert("Only Punler can create a room.");
+
+    return;
+
+  }
+
+  let name=
+    document.getElementById("roomName")
+      .value.trim();
+
+  let price=
+    Number(
+      document.getElementById("roomPrice")
+        .value
+    )||0;
+
+  if(!name){
+
+    alert("Enter room name");
+
+    return;
+
+  }
+
+  let id=
+    "room_"+Date.now();
+
+  rooms.push({
+
+    id:id,
+
+    name:name,
+
+    price:price,
+
+    owner:OWNER
+
+  });
+
+  chats[id]=[];
+
+  members[id]=[
+
+    {
+      name:OWNER,
+      online:true,
+      picture:profilePicture
+    }
+
+  ];
+
+  currentRoom=id;
+
+  save();
+
+  localStorage.setItem(
+    "raitoCurrentRoom",
+    currentRoom
+  );
+
+  document.getElementById("roomName")
+    .value="";
+
+  document.getElementById("roomPrice")
+    .value="";
+
+  closeRoom();
+
+  renderRooms();
+  renderChat();
+  renderPeople();
+
+}
+
+
+/* =========================
+   DELETE ALL CHAT
+========================= */
+
+function deleteAllChat(){
+
+  if(username!==OWNER){
+
+    alert("Only Punler can delete all chat.");
+
+    return;
+
+  }
+
+  if(!confirm(
+    "Delete ALL chat in this room?"
+  ))return;
+
+  chats[currentRoom]=[];
+
+  save();
+
+  renderChat();
+
+}
+
+
+/* =========================
+   DELETE ROOM
+========================= */
+
+function deleteRoom(){
+
+  if(username!==OWNER){
+
+    alert("Only Punler can delete a room.");
+
+    return;
+
+  }
+
+  if(currentRoom==="public"){
+
+    alert("Public Room cannot be deleted.");
+
+    return;
+
+  }
+
+  let room=
+    rooms.find(
+      r=>r.id===currentRoom
+    );
+
+  if(!room)return;
+
+  if(!confirm(
+    "Delete room '"+room.name+"'?"
+  ))return;
+
+  rooms=
+    rooms.filter(
+      r=>r.id!==currentRoom
+    );
+
+  delete chats[currentRoom];
+
+  delete members[currentRoom];
+
+  currentRoom="public";
+
+  localStorage.setItem(
+    "raitoCurrentRoom",
+    "public"
+  );
+
+  save();
+
+  renderRooms();
+  renderChat();
+  renderPeople();
+
+}
+
+
+/* =========================
+   CHAT
+========================= */
+
+function renderChat(){
+
+  let box=
+    document.getElementById("messages");
+
+  let list=
+    chats[currentRoom]||[];
+
+  box.innerHTML="";
+
+  list.forEach((m,index)=>{
+
+    let div=
+      document.createElement("div");
+
+    div.className=
+      "message "+
+      (
+        m.user===username
+        ?"me"
+        :""
+      );
+
+    let content="";
+
+    if(m.type==="text"){
+
+      content=`
+
+        <div class="bubble">
+
+          ${safe(m.text)}
+
+          ${
+            m.edited
+            ?'<small style="color:#bbb"> (edited)</small>'
+            :""
+          }
+
+        </div>
+
+      `;
+
+    }
+
+
+    if(m.type==="image"){
+
+      content=`
+
+        <div class="bubble">
+
+          <img
+            class="media"
+            src="${m.url}"
+          >
+
+        </div>
+
+      `;
+
+    }
+
+
+    if(m.type==="video"){
+
+      content=`
+
+        <div class="bubble">
+
+          <video
+            class="media"
+            src="${m.url}"
+            controls
+          ></video>
+
+        </div>
+
+      `;
+
+    }
+
+
+    let r=
+      m.reactions||{};
+
+
+    let ownButtons="";
+
+    if(m.user===username){
+
+      ownButtons=`
+
+        <button
+          class="action"
+          onclick="editMessage(${index})"
+        >
+          ✏️ Edit
+        </button>
+
+        <button
+          class="action"
+          onclick="deleteMessage(${index})"
+        >
+          🗑️ Delete
+        </button>
+
+      `;
+
+    }
+
+
+    div.innerHTML=`
+
+      <div class="name">
+
+        ${safe(m.user)}
+
+        ·
+
+        ${new Date(m.time)
+          .toLocaleTimeString(
+            [],
+            {
+              hour:"2-digit",
+              minute:"2-digit"
+            }
+          )}
+
+      </div>
+
+
+      <div class="messageTop">
+
+        ${avatarHTML(
+          m.user,
+          "chatAvatar"
+        )}
+
+        <div>
+
+          ${content}
+
+          <div class="actions">
+
+            <button
+              class="action ${
+                r["❤️"]
+                ?"selected"
+                :""
+              }"
+              onclick="toggleReaction(
+                ${index},
+                '❤️'
+              )"
+            >
+              ❤️ ${r["❤️"]||0}
+            </button>
+
+
+            <button
+              class="action ${
+                r["😂"]
+                ?"selected"
+                :""
+              }"
+              onclick="toggleReaction(
+                ${index},
+                '😂'
+              )"
+            >
+              😂 ${r["😂"]||0}
+            </button>
+
+
+            <button
+              class="action ${
+                r["👍"]
+                ?"selected"
+                :""
+              }"
+              onclick="toggleReaction(
+                ${index},
+                '👍'
+              )"
+            >
+              👍 ${r["👍"]||0}
+            </button>
+
+
+            <button
+              class="action ${
+                r["🔥"]
+                ?"selected"
+                :""
+              }"
+              onclick="toggleReaction(
+                ${index},
+                '🔥'
+              )"
+            >
+              🔥 ${r["🔥"]||0}
+            </button>
+
+            ${ownButtons}
+
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+
+    box.appendChild(div);
+
+  });
+
+  box.scrollTop=
+    box.scrollHeight;
+
+}
+
+
+/* =========================
+   SEND TEXT
+========================= */
+
+function sendText(){
+
+  let input=
+    document.getElementById("text");
+
+  let text=
+    input.value.trim();
+
+  if(!text)return;
+
+  chats[currentRoom]=
+    chats[currentRoom]||[];
+
+  chats[currentRoom].push({
+
+    id:Date.now(),
+
+    user:username||"Guest",
+
+    type:"text",
+
+    text:text,
+
+    time:Date.now(),
+
+    reactions:{}
+
+  });
+
+  save();
+
+  input.value="";
+
+  renderChat();
+
+}
+
+
+/* ENTER */
+
+document.getElementById("text")
+.addEventListener(
+  "keydown",
+  e=>{
+
+    if(e.key==="Enter"){
+
+      sendText();
+
+    }
+
+  }
+);
+
+
+/* =========================
+   EDIT
+========================= */
+
+function editMessage(index){
+
+  let m=
+    chats[currentRoom][index];
+
+  if(m.user!==username)return;
+
+  if(m.type!=="text"){
+
+    alert(
+      "Only text messages can be edited."
+    );
+
+    return;
+
+  }
+
+  let newText=
+    prompt(
+      "Edit message:",
+      m.text
+    );
+
+  if(newText===null)return;
+
+  newText=
+    newText.trim();
+
+  if(!newText)return;
+
+  m.text=newText;
+
+  m.edited=true;
+
+  save();
+
+  renderChat();
+
+}
+
+
+/* =========================
+   DELETE OWN MESSAGE
+========================= */
+
+function deleteMessage(index){
+
+  let m=
+    chats[currentRoom][index];
+
+  if(m.user!==username)return;
+
+  if(!confirm(
+    "Delete this message?"
+  ))return;
+
+  chats[currentRoom]
+    .splice(index,1);
+
+  save();
+
+  renderChat();
+
+}
+
+
+/* =========================
+   REACTION
+========================= */
+
+function toggleReaction(
+  index,
+  emoji
+){
+
+  let m=
+    chats[currentRoom][index];
+
+  m.reactions=
+    m.reactions||{};
+
+
+  if(m.reactions[emoji]){
+
+    m.reactions[emoji]--;
+
+    if(
+      m.reactions[emoji]<=0
+    ){
+
+      delete m.reactions[emoji];
+
+    }
+
+  }else{
+
+    m.reactions[emoji]=1;
+
+  }
+
+  save();
+
+  renderChat();
+
+}
+
+
+/* =========================
+   PHOTO
+========================= */
+
+document.getElementById("photo")
+.addEventListener(
+  "change",
+  function(){
+
+    let file=this.files[0];
+
+    if(!file)return;
+
+    if(!file.type.startsWith("image/")){
+
+      alert("Please choose an image.");
+
+      return;
+
+    }
+
+    let reader=
+      new FileReader();
+
+    reader.onload=
+      e=>{
+
+        addMedia(
+          "image",
+          e.target.result
+        );
+
+      };
+
+    reader.readAsDataURL(file);
+
+    this.value="";
+
+  }
+);
+
+
+/* =========================
+   VIDEO
+========================= */
+
+document.getElementById("video")
+.addEventListener(
+  "change",
+  function(){
+
+    let file=this.files[0];
+
+    if(!file)return;
+
+    let reader=
+      new FileReader();
+
+    reader.onload=
+      e=>{
+
+        addMedia(
+          "video",
+          e.target.result
+        );
+
+      };
+
+    reader.readAsDataURL(file);
+
+    this.value="";
+
+  }
+);
+
+
+function addMedia(
+  type,
+  url
+){
+
+  chats[currentRoom]=
+    chats[currentRoom]||[];
+
+  chats[currentRoom].push({
+
+    id:Date.now(),
+
+    user:username||"Guest",
+
+    type:type,
+
+    url:url,
+
+    time:Date.now(),
+
+    reactions:{}
+
+  });
+
+  save();
+
+  renderChat();
+
+}
+
+
+/* =========================
+   EMOJI
+========================= */
+
+let emojiList=[
+
+  "😀","😂","😍","😎",
+  "🔥","❤️","👍","👎",
+  "😭","😡","🎉","💯",
+  "🙏","🤣","✨","😈",
+  "👀","💀","🥰","😴"
+
+];
+
+
+document.getElementById("emoji")
+.innerHTML=
+  emojiList.map(
+    e=>`
+
+      <button
+        onclick="addEmoji('${e}')"
+      >
+        ${e}
+      </button>
+
+    `
+  ).join("");
+
+
+function toggleEmoji(){
+
+  let box=
+    document.getElementById("emoji");
+
+  box.style.display=
+    box.style.display==="block"
+    ?"none"
+    :"block";
+
+}
+
+
+function addEmoji(e){
+
+  let input=
+    document.getElementById("text");
+
+  input.value+=e;
+
+  input.focus();
+
+  document.getElementById("emoji")
+    .style.display="none";
+
+}
+
+
+/* =========================
+   OWNER: KICK
+========================= */
+
+function kickPlayer(player){
+
+  if(username!==OWNER){
+
+    alert(
+      "Only Punler can kick players."
+    );
+
+    return;
+
+  }
+
+  if(!confirm(
+    "Kick "+player+
+    " from this room?"
+  ))return;
+
+  members[currentRoom]=
+    (members[currentRoom]||[])
+      .filter(
+        p=>p.name!==player
+      );
+
+  save();
+
+  renderPeople();
+
+}
+
+
+/* =========================
+   OWNER: MOVE
+========================= */
+
+let selectedPlayer="";
+
+
+function movePlayer(player){
+
+  if(username!==OWNER){
+
+    alert(
+      "Only Punler can move players an delete all room."
+    );
+
+    return;
+
+  }
+
+  selectedPlayer=player;
+
+  let select=
+    document.getElementById(
+      "moveRoom"
+    );
+
+  select.innerHTML="";
+
+
+  rooms
+    .filter(
+      r=>r.id!==currentRoom
+    )
+    .forEach(
+      room=>{
+
+        let option=
+          document.createElement(
+            "option"
+          );
+
+        option.value=
+          room.id;
+
+        option.textContent=
+          room.name;
+
+        select.appendChild(
+          option
+        );
+
+      }
+    );
+
+
+  if(!select.options.length){
+
+    alert(
+      "Create another room first."
+    );
+
+    return;
+
+  }
+
+
+  document.getElementById(
+    "movePlayerName"
+  )
+  .textContent=
+    "Move "+player+" to:";
+
+
+  document.getElementById(
+    "moveModal"
+  )
+  .style.display="flex";
+
+}
+
+
+function closeMove(){
+
+  document.getElementById(
+    "moveModal"
+  )
+  .style.display="none";
+
+}
+
+
+function confirmMove(){
+
+  if(username!==OWNER)return;
+
+  let destination=
+    document.getElementById(
+      "moveRoom"
+    ).value;
+
+  if(!destination)return;
+
+  let player=
+    members[currentRoom]
+      .find(
+        p=>p.name===selectedPlayer
+      );
+
+  if(!player)return;
+
+
+  members[currentRoom]=
+    members[currentRoom]
+      .filter(
+        p=>p.name!==selectedPlayer
+      );
+
+
+  members[destination]=
+    members[destination]||[];
+
+
+  members[destination].push(
+    player
+  );
+
+  save();
+
+  closeMove();
+
+  renderPeople();
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+document.getElementById("myName")
+  .textContent=
+    username||"Guest";
+
+
+if(username){
+
+  addMeToRoom();
+
+}
+
+
+renderRooms();
+renderChat();
+renderPeople();
+
+
+/* OPEN PROFILE FIRST TIME */
+
+if(!username){
+
+  setTimeout(
+    ()=>{
+      document.getElementById(
+        "profileModal"
+      ).style.display="flex";
+    },
+    300
+  );
+
+}
+
+</script>
+
+</body>
+</html>
